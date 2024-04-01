@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="703.0" prefWidth="1091.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SlideController">
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="1091.0" BorderPane.alignment="CENTER">
+         <children>
+            <ButtonBar prefHeight="57.0" prefWidth="591.0" style="-fx-background-color: black;">
+               <buttons>
+                  <MFXButton fx:id="btnLoad" onAction="#handleBtnLoadAction" prefHeight="27.0" style="-fx-background-color: black;" text="Load images..." textFill="WHITE" />
+                  <MFXButton fx:id="btnPrevious" onAction="#handleBtnPreviousAction" style="-fx-background-color: black;" text="Previous" textFill="WHITE" />
+                  <MFXButton fx:id="btnNet" onAction="#handleBtnNextAction" style="-fx-background-color: black;" text="Next" textFill="WHITE" />
+                  <MFXButton fx:id="btnStart" onAction="#handleBtnStart" style="-fx-background-color: black;" text="Start" textFill="WHITE" />
+                  <MFXButton fx:id="btnEnd" onAction="#handleBtnEnd" prefHeight="27.0" style="-fx-background-color: black;" text="Stop" textFill="WHITE" />
+               </buttons>
+            </ButtonBar>
+            <Pane prefHeight="57.0" prefWidth="502.0" style="-fx-background-color: black;">
+               <children>
+                  <Label layoutX="91.0" layoutY="15.0" prefHeight="28.0" prefWidth="33.0" text="R-" textFill="RED">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="209.0" layoutY="15.0" prefHeight="28.0" prefWidth="42.0" text="G-" textFill="#00ff22">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="356.0" layoutY="15.0" prefHeight="28.0" prefWidth="34.0" text="B-" textFill="#005eff">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="Red" layoutX="124.0" layoutY="15.0" text="0" textFill="RED">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="Green" layoutX="244.0" layoutY="15.0" text="0" textFill="#33ff00">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="Blue" layoutX="383.0" layoutY="15.0" text="0" textFill="#005eff">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+               </children></Pane>
+         </children>
+         <opaqueInsets>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </opaqueInsets>
+      </HBox>
+   </top>
+   <center>
+      <BorderPane prefHeight="684.0" prefWidth="1091.0" BorderPane.alignment="CENTER">
+         <center>
+            <ImageView fx:id="imageView" fitHeight="647.0" fitWidth="1090.0" pickOnBounds="true" preserveRatio="true" />
+         </center>
+      </BorderPane>
+   </center>
+</BorderPane>
