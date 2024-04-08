@@ -14,14 +14,13 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SlideController {
     public Label Red;
     public Label Green;
     public Label Blue;
-
+    public Label photoName; // Лейбл для відображення імені зображення
 
     @FXML
     Parent root;
@@ -30,12 +29,12 @@ public class SlideController {
     private ImageView imageView;
 
     @FXML
-     private Pane RGB;
-    Timer timer = new Timer();
+    private Pane RGB;
 
-
-    private final List<Image> images = new ArrayList<>();
+    private final List<File> images = new ArrayList<>(); // Змінили тип зберігання на List<File>
     private int currentImageIndex = 0;
+    private Thread slideShowThread;
+    private final AtomicBoolean slideShowRunning = new AtomicBoolean(false);
 
     @FXML
     public void handleBtnLoadAction(ActionEvent actionEvent) {
@@ -46,40 +45,51 @@ public class SlideController {
         List<File> files = fileChooser.showOpenMultipleDialog(new Stage());
 
         if (files != null && !files.isEmpty()) {
-            files.forEach(file -> images.add(new Image(file.toURI().toString())));
+            images.addAll(files); // Додавання файлів безпосередньо до списку
             displayImage();
         }
     }
 
     private void displayImage() {
         if (!images.isEmpty()) {
-            imageView.setImage(images.get(currentImageIndex));
+            File currentFile = images.get(currentImageIndex);
+            Image image = new Image(currentFile.toURI().toString());
+            imageView.setImage(image);
+            photoName.setText(currentFile.getName()); // Оновлюємо ім'я файлу
             analyzeAndDisplayImageColors();
         }
     }
 
     @FXML
     public void handleBtnStart(ActionEvent actionEvent) {
-        timer.cancel(); // Вимкнути поточний таймер перед створенням нового
-        timer = new Timer();
-        slideShow();
+        if (slideShowRunning.get()) return; // Слайд-шоу вже запущено
+
+        slideShowRunning.set(true);
+        slideShowThread = new Thread(this::slideShow);
+        slideShowThread.start();
     }
 
     public void slideShow() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    currentImageIndex = (currentImageIndex + 1) % images.size();
-                    displayImage();
-                });
+        while (slideShowRunning.get()) {
+            Platform.runLater(() -> {
+                currentImageIndex = (currentImageIndex + 1) % images.size();
+                displayImage();
+            });
+
+            try {
+                Thread.sleep(5000); // Задержка між слайдами
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                slideShowRunning.set(false);
             }
-        }, 0, 5000); // Почати негайно з інтервалом у 5000 мс (5 сек)
+        }
     }
 
     @FXML
     public void handleBtnEnd(ActionEvent actionEvent) {
-        timer.cancel(); // Скасувати слайд-шоу
+        if (slideShowRunning.getAndSet(false) && slideShowThread != null) {
+            slideShowThread.interrupt(); // Зупиняємо слайд-шоу
+        }
     }
 
     public void handleBtnPreviousAction(ActionEvent actionEvent) {
@@ -95,6 +105,7 @@ public class SlideController {
             displayImage();
         }
     }
+
     public void analyzeAndDisplayImageColors() {
         if (imageView.getImage() == null) {
             return; // Якщо зображення не завантажено, не робимо нічого
@@ -119,7 +130,6 @@ public class SlideController {
         }
 
         long total = totalRed + totalGreen + totalBlue; // Загальна сума всіх кольорів
-        // Обчислення відсоткових значень для кожного кольору
         double percentRed = total > 0 ? (double) totalRed / total * 100 : 0;
         double percentGreen = total > 0 ? (double) totalGreen / total * 100 : 0;
         double percentBlue = total > 0 ? (double) totalBlue / total * 100 : 0;
@@ -131,6 +141,5 @@ public class SlideController {
             Blue.setText(String.format("%.2f%%", percentBlue));
         });
     }
-
 
 }
